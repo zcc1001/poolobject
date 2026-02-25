@@ -62,10 +62,21 @@ public class ReusablePoolTest {
 	 * {@link ubu.gii.dass.c01.ReusablePool#releaseReusable(ubu.gii.dass.c01.Reusable)}.
 	 */
 	@Test
-	@DisplayName("testReleaseReusable")
-	@Disabled("Not implemented yet")
-	public void testReleaseReusable() {
-
-	}
+    @DisplayName("Liberar un objeto correctamente y lanzar excepcion si se intenta liberar uno ya existente")
+    public void testReleaseReusable() throws NotFreeInstanceException, DuplicatedInstanceException {
+        ReusablePool instance = ReusablePool.getInstance();
+        
+        // 1. Preparamos el escenario: sacamos un objeto para luego devolverlo
+        Reusable r1 = instance.acquireReusable();
+        
+        // 2. Caso de éxito: Devolvemos el objeto y no debería dar error
+        instance.releaseReusable(r1);
+        
+        // 3. Caso de error: Intentamos devolver el MISMO objeto otra vez
+        // Esto cubrirá la clase DuplicatedInstanceException
+        Assertions.assertThrows(DuplicatedInstanceException.class, () -> {
+            instance.releaseReusable(r1);
+        });
+    }
 
 }
